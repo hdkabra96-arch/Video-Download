@@ -358,9 +358,9 @@ const StudentView: React.FC<StudentViewProps> = ({ papers, activeStudent, onLogi
         return;
       }
       
-      // Validate file size (max 5MB)
-      if (file.size > 5 * 1024 * 1024) {
-        alert("File size must be less than 5MB");
+      // Validate file size (max 40MB)
+      if (file.size > 40 * 1024 * 1024) {
+        alert("File size must be less than 40 MB");
         e.target.value = '';
         return;
       }
