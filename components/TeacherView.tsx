@@ -50,9 +50,9 @@ const TeacherView: React.FC<TeacherViewProps> = ({ onPaperCreated, onPaperDelete
     const file = e.target.files?.[0];
     if (!file) return;
     
-    // Validate file size (max 45MB)
-    if (file.size > 45 * 1024 * 1024) {
-      alert("File size must be less than 45 MB");
+    // Validate file size (max 40MB)
+    if (file.size > 40 * 1024 * 1024) {
+      alert("File size must be less than 40 MB");
       e.target.value = '';
       return;
     }
@@ -63,24 +63,38 @@ const TeacherView: React.FC<TeacherViewProps> = ({ onPaperCreated, onPaperDelete
 
     const reader = new FileReader();
     reader.onload = async (event) => {
-      const base64Full = event.target?.result as string;
-      setUploadedFile({ name: file.name, data: base64Full, type: file.type || 'application/pdf', size: file.size });
+      try {
+        const base64Full = event.target?.result as string;
+        setUploadedFile({ name: file.name, data: base64Full, type: file.type || 'application/pdf', size: file.size });
 
-      if (process.env.API_KEY) {
-        setIsAnalyzing(true);
-        try {
-          const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
-          const response = await ai.models.generateContent({
-            model: 'gemini-3-flash-preview',
-            contents: { parts: [ { inlineData: { mimeType: file.type || 'application/pdf', data: base64Full.split(',')[1] } }, { text: `Extract: title, subject, grade, and questions list.` } ] },
-            config: { responseMimeType: "application/json", responseSchema: { type: Type.OBJECT, properties: { title: { type: Type.STRING }, subject: { type: Type.STRING }, grade: { type: Type.STRING }, questions: { type: Type.ARRAY, items: { type: Type.OBJECT, properties: { text: { type: Type.STRING }, type: { type: Type.STRING, enum: ['mcq', 'subjective'] }, points: { type: Type.NUMBER } } } } } } }
-          });
-          const data = JSON.parse(response.text || '{}');
-          if (data.title) setTitle(data.title);
-          if (data.subject) setSubject(data.subject);
-          if (data.grade) setGrade(data.grade);
-          if (data.questions) setQuestions(data.questions.map((q: any) => ({ id: Math.random().toString(36).substr(2, 9), text: q.text, type: q.type || 'subjective', points: q.points || 5 })));
-        } catch (err) { console.error(err); } finally { setIsAnalyzing(false); }
+        if (process.env.API_KEY) {
+          setIsAnalyzing(true);
+          try {
+            if (file.size > 20 * 1024 * 1024) {
+              alert("Large file detected. AI analysis may take longer. Please wait...");
+            }
+            
+            const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+            const response = await ai.models.generateContent({
+              model: 'gemini-3-flash-preview',
+              contents: { parts: [ { inlineData: { mimeType: file.type || 'application/pdf', data: base64Full.split(',')[1] } }, { text: `Extract: title, subject, grade, and questions list.` } ] },
+              config: { responseMimeType: "application/json", responseSchema: { type: Type.OBJECT, properties: { title: { type: Type.STRING }, subject: { type: Type.STRING }, grade: { type: Type.STRING }, questions: { type: Type.ARRAY, items: { type: Type.OBJECT, properties: { text: { type: Type.STRING }, type: { type: Type.STRING, enum: ['mcq', 'subjective'] }, points: { type: Type.NUMBER } } } } } } }
+            });
+            const data = JSON.parse(response.text || '{}');
+            if (data.title) setTitle(data.title);
+            if (data.subject) setSubject(data.subject);
+            if (data.grade) setGrade(data.grade);
+            if (data.questions) setQuestions(data.questions.map((q: any) => ({ id: Math.random().toString(36).substr(2, 9), text: q.text, type: q.type || 'subjective', points: q.points || 5 })));
+          } catch (err) {
+            console.error("AI Analysis Error:", err);
+            alert("AI analysis failed for large file. You can still create the exam manually.");
+          } finally {
+            setIsAnalyzing(false);
+          }
+        }
+      } catch (error) {
+        console.error("File processing error:", error);
+        alert("Failed to process file. Please try again.");
       }
     };
     reader.readAsDataURL(file);
