@@ -50,6 +50,13 @@ const TeacherView: React.FC<TeacherViewProps> = ({ onPaperCreated, onPaperDelete
     const file = e.target.files?.[0];
     if (!file) return;
     
+    // Validate file size (max 45MB)
+    if (file.size > 45 * 1024 * 1024) {
+      alert("File size must be less than 45 MB");
+      e.target.value = '';
+      return;
+    }
+    
     if (previewUrl) URL.revokeObjectURL(previewUrl);
     const url = URL.createObjectURL(file);
     setPreviewUrl(url);
