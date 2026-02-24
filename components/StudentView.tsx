@@ -597,7 +597,7 @@ const StudentView: React.FC<StudentViewProps> = ({ papers, activeStudent, onLogi
                )}
 
                <div className="mt-8 pt-8 border-t border-slate-100">
-                  <div className="flex flex-wrap items-center gap-3 mb-4">
+                  <div className="flex flex-wrap justify-center items-center gap-3 mb-8">
                      <label className="flex items-center gap-3 bg-slate-50 border border-slate-200 px-4 py-3 rounded-2xl cursor-pointer hover:bg-slate-100 transition-colors">
                         <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" /></svg>
                         <span className="text-xs font-black uppercase text-slate-600">{currentAnswer?.imageUri ? 'Change' : 'Capture'}</span>
@@ -613,7 +613,7 @@ const StudentView: React.FC<StudentViewProps> = ({ papers, activeStudent, onLogi
                      </button>
                   </div>
 
-                  <div className="flex justify-end items-center gap-4">
+                  <div className="flex justify-center items-center gap-4 mb-8">
                      {currentAnswer?.imageUri && (
                        <div className="flex items-center gap-3">
                          <div className="relative">
@@ -640,9 +640,9 @@ const StudentView: React.FC<StudentViewProps> = ({ papers, activeStudent, onLogi
                </div>
             </div>
 
-            <div className="max-w-3xl mx-auto flex justify-between mt-10">
-               <button disabled={currentQuestionIndex === 0} onClick={() => setCurrentQuestionIndex(prev => prev - 1)} className="bg-white border border-slate-200 px-10 py-4 rounded-2xl font-black uppercase text-xs tracking-widest disabled:opacity-30">Previous</button>
-               <button disabled={currentQuestionIndex === activeSession?.paper.questions.length! - 1} onClick={() => setCurrentQuestionIndex(prev => prev + 1)} className="bg-indigo-600 text-white px-10 py-4 rounded-2xl font-black uppercase text-xs tracking-widest disabled:opacity-30">Next</button>
+            <div className="max-w-3xl mx-auto flex justify-center items-center gap-6 mt-10 pb-4">
+               <button disabled={currentQuestionIndex === 0} onClick={() => setCurrentQuestionIndex(prev => prev - 1)} className="bg-white border border-slate-200 px-10 py-4 rounded-2xl font-black uppercase text-xs tracking-widest disabled:opacity-30 hover:bg-slate-50">Previous</button>
+               <button disabled={currentQuestionIndex === activeSession?.paper.questions.length! - 1} onClick={() => setCurrentQuestionIndex(prev => prev + 1)} className="bg-indigo-600 text-white px-10 py-4 rounded-2xl font-black uppercase text-xs tracking-widest disabled:opacity-30 hover:bg-indigo-700">Next</button>
             </div>
          </div>
       </div>
